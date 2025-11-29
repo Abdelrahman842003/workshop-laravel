@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\Reporting\Enums\ReportStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,11 +14,10 @@ return new class extends Migration
     {
         Schema::create('generated_reports', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('report_template_id')->nullable()->constrained()->nullOnDelete();
             $table->string('path')->nullable();
             $table->string('format', 10);
-            $table->string('status')->default('pending')->index();
+            $table->string('status')->default(ReportStatus::PENDING->value)->index();
             $table->timestamp('expires_at')->index();
             $table->timestamps();
         });

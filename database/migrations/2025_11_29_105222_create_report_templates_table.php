@@ -11,9 +11,9 @@ return new class extends Migration
     {
         Schema::create('report_templates', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('report_type'); 
+            $table->json('configuration')->nullable(); 
             $table->timestamps();
         });
     }

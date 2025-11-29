@@ -4,19 +4,67 @@ namespace App\Http\Controllers\Reports;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Reports\GenerateReportRequest;
-use Illuminate\Http\JsonResponse;
+use App\Services\Reporting\ReportService;
 
 class AnalyticsReportController extends Controller
 {
     /**
+     * Display the report generation form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        return view('reports.index');
+    }
+
+    /**
      * Generate a new analytics report.
      *
-     * @param GenerateReportRequest $request
-     * @return JsonResponse
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function generate(GenerateReportRequest $request): JsonResponse
+    public function generate(GenerateReportRequest $request, ReportService $reportService): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
-        // Logic to be implemented
-        return response()->json(['message' => 'Report generation started']);
+        $validated = $request->validated();
+
+        // Save Template if requested
+        if ($request->boolean('save_template')) {
+            $reportService->saveTemplate($validated);
+        }
+
+        $filePath = $reportService->generate(
+            $validated['report_type'],
+            \Illuminate\Support\Arr::except($validated, ['report_type', 'format', 'save_template']),
+            $validated['format'],
+            null // templateId (future use)
+        );
+
+        return response()->download($filePath);
+    }
+
+    /**
+     * Get saved report templates.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function templates(\Illuminate\Http\Request $request)
+    {
+        $templates = \App\Models\ReportTemplate::latest()
+            ->paginate(5);
+
+        return response()->json($templates);
+    }
+    /**
+     * Get recent generated reports.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function recent()
+    {
+        $reports = \App\Models\GeneratedReport::latest()
+            ->take(5)
+            ->get();
+
+        return response()->json($reports);
     }
 }

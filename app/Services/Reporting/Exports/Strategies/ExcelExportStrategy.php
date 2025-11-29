@@ -4,7 +4,7 @@ namespace App\Services\Reporting\Exports\Strategies;
 
 use App\Services\Reporting\Exports\Contracts\ExportStrategyInterface;
 
-class CsvExportStrategy implements ExportStrategyInterface
+class ExcelExportStrategy implements ExportStrategyInterface
 {
     /**
      * Export the given data.
@@ -14,7 +14,7 @@ class CsvExportStrategy implements ExportStrategyInterface
      */
     public function export($data)
     {
-        $fileName = 'report-' . now()->timestamp . '.csv';
+        $fileName = 'report-' . now()->timestamp . '.xlsx';
         $filePath = storage_path('app/public/' . $fileName);
 
         // Ensure directory exists
@@ -22,20 +22,13 @@ class CsvExportStrategy implements ExportStrategyInterface
             mkdir(dirname($filePath), 0755, true);
         }
 
-        $writer = new \OpenSpout\Writer\CSV\Writer();
+        $writer = new \OpenSpout\Writer\XLSX\Writer();
         $writer->openToFile($filePath);
 
         $headersWritten = false;
 
         foreach ($data->data as $row) {
             $rowArray = (array) $row;
-
-            // Convert array values to JSON strings
-            array_walk($rowArray, function (&$value) {
-                if (is_array($value)) {
-                    $value = json_encode($value);
-                }
-            });
 
             if (!$headersWritten) {
                 $writer->addRow(\OpenSpout\Common\Entity\Row::fromValues(array_keys($rowArray)));

@@ -6,36 +6,42 @@ use App\Services\Reporting\Contracts\ReportBuilderInterface;
 
 class MarketingReportBuilder implements ReportBuilderInterface
 {
-    /**
-     * Set the date range for the report.
-     *
-     * @param string $start
-     * @param string $end
-     * @return self
-     */
+    protected string $startDate;
+    protected string $endDate;
+    protected array $columns = ['*'];
+    protected array $filters = [];
+
     public function setDateRange(string $start, string $end): self
     {
+        $this->startDate = $start;
+        $this->endDate = $end;
         return $this;
     }
 
-    /**
-     * Select specific columns for the report.
-     *
-     * @param array $columns
-     * @return self
-     */
     public function selectColumns(array $columns): self
     {
+        $this->columns = $columns;
         return $this;
     }
 
-    /**
-     * Build the report.
-     *
-     * @return mixed
-     */
-    public function build()
+    public function applyFilters(array $filters): self
     {
-        return null;
+        $this->filters = $filters;
+        return $this;
+    }
+
+    public function getResult(): \App\Services\Reporting\DTOs\ReportDTO
+    {
+        $query = \App\Models\AnalyticsData::query()
+            ->whereIn('event_type', ['signup', 'view'])
+            ->whereBetween('created_at', [$this->startDate, $this->endDate]);
+
+        if (!empty($this->filters['min_value'])) {
+            $query->where('value', '>=', $this->filters['min_value']);
+        }
+
+        $data = $query->cursor();
+
+        return new \App\Services\Reporting\DTOs\ReportDTO($data);
     }
 }

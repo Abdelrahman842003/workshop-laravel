@@ -5,13 +5,12 @@ namespace App\Services\Reporting\Builders;
 use App\Models\AnalyticsData;
 use App\Services\Reporting\Contracts\ReportBuilderInterface;
 use App\Services\Reporting\DTOs\ReportDTO;
-use Illuminate\Support\LazyCollection; 
 
-class SalesReportBuilder implements ReportBuilderInterface
+class AnalyticsReportBuilder implements ReportBuilderInterface
 {
     protected string $startDate;
     protected string $endDate;
-    protected array $columns = ['*']; 
+    protected array $columns = ['*'];
     protected array $filters = [];
 
     public function setDateRange(string $start, string $end): self
@@ -33,22 +32,21 @@ class SalesReportBuilder implements ReportBuilderInterface
         return $this;
     }
 
-    public function getQuery()
+    public function getResult(): ReportDTO
     {
         $query = AnalyticsData::query()
-            ->where('event_type', 'sale') 
             ->whereBetween('created_at', [$this->startDate, $this->endDate]);
 
-        if (! empty($this->filters['min_value'])) {
+        if (!empty($this->filters['event_type'])) {
+            $query->where('event_type', $this->filters['event_type']);
+        }
+
+        if (!empty($this->filters['min_value'])) {
             $query->where('value', '>=', $this->filters['min_value']);
         }
 
-        return $query;
-    }
-
-    public function getResult(): ReportDTO
-    {
-        $data = $this->getQuery()->select($this->columns)->cursor();
+        $data = $query->cursor();
+        
         return new ReportDTO($data);
     }
 }

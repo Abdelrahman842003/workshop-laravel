@@ -7,13 +7,29 @@ use App\Services\Reporting\Contracts\ReportBuilderInterface;
 class ReportDirector
 {
     /**
-     * Build a report using the given builder.
+     * Build a report from a template.
      *
      * @param ReportBuilderInterface $builder
-     * @return mixed
+     * @param int $templateId
+     * @return \App\Services\Reporting\DTOs\ReportDTO
      */
-    public function buildReport(ReportBuilderInterface $builder)
+    public function buildFromTemplate(ReportBuilderInterface $builder, int $templateId)
     {
-        return $builder->build();
+        $template = \App\Models\ReportTemplate::findOrFail($templateId);
+        $config = $template->configuration;
+
+        if (isset($config['start_date']) && isset($config['end_date'])) {
+            $builder->setDateRange($config['start_date'], $config['end_date']);
+        }
+
+        if (!empty($config['columns'])) {
+            $builder->selectColumns($config['columns']);
+        }
+
+        if (!empty($config['filters'])) {
+            $builder->applyFilters($config['filters']);
+        }
+
+        return $builder->getResult();
     }
 }

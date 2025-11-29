@@ -6,25 +6,23 @@ interface ReportBuilderInterface
 {
     /**
      * Set the date range for the report.
-     *
-     * @param string $start
-     * @param string $end
-     * @return self
      */
     public function setDateRange(string $start, string $end): self;
 
     /**
      * Select specific columns for the report.
-     *
-     * @param array $columns
-     * @return self
      */
     public function selectColumns(array $columns): self;
 
     /**
-     * Build the report.
-     *
-     * @return mixed
+     * Apply filters to the report.
      */
-    public function build();
+    public function applyFilters(array $filters): self;
+
+    /**
+     * Get the result of the report.
+     *
+     * @return \App\Services\Reporting\DTOs\ReportDTO
+     */
+    public function getResult();
 }

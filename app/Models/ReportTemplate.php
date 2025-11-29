@@ -17,18 +17,19 @@ class ReportTemplate extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
         'name',
         'report_type',
+        'configuration',
     ];
 
     /**
-     * Get the user that owns the report template.
+     * The attributes that should be cast.
+     *
+     * @var array
      */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
+    protected $casts = [
+        'configuration' => 'array',
+    ];
 
     /**
      * Get the generated reports for the template.

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+use App\Services\Reporting\Enums\ReportStatus;
+
 class GeneratedReport extends Model
 {
     use HasUuids;
@@ -16,7 +18,6 @@ class GeneratedReport extends Model
      * @var array
      */
     protected $fillable = [
-        'user_id',
         'report_template_id',
         'path',
         'format',
@@ -33,14 +34,6 @@ class GeneratedReport extends Model
         'expires_at' => 'datetime',
         'status' => ReportStatus::class,
     ];
-
-    /**
-     * Get the user that generated the report.
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 
     /**
      * Get the template used for the report.

@@ -24,7 +24,15 @@ class GenerateReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Validation rules to be implemented
+            'report_type' => 'required|in:sales,marketing,analytics',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'format' => 'required|in:csv,pdf,excel',
+            'columns' => 'nullable|array',
+            'columns.*' => 'string',
+            'filters' => 'nullable|array',
+            'filters.min_value' => 'nullable|numeric',
+            'filters.event_type' => 'nullable|string',
         ];
     }
 }

@@ -2,20 +2,17 @@
 
 namespace App\Services\Reporting\DTOs;
 
+use Illuminate\Support\Enumerable;
+
 class ReportDTO
 {
-    public $data;
-    public $meta;
-
     /**
      * Create a new ReportDTO instance.
-     *
-     * @param mixed $data
+     * * @param Enumerable $data (Accepts both Collection and LazyCollection)
      * @param array $meta
      */
-    public function __construct($data, array $meta = [])
-    {
-        $this->data = $data;
-        $this->meta = $meta;
-    }
+    public function __construct(
+        public readonly Enumerable $data,
+        public readonly array $meta = []
+    ) {}
 }

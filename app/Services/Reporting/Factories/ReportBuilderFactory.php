@@ -14,6 +14,11 @@ class ReportBuilderFactory
      */
     public function create(string $type): ?ReportBuilderInterface
     {
-        return null;
+        return match ($type) {
+            'sales' => new \App\Services\Reporting\Builders\SalesReportBuilder(),
+            'marketing' => new \App\Services\Reporting\Builders\MarketingReportBuilder(),
+            'analytics' => new \App\Services\Reporting\Builders\AnalyticsReportBuilder(),
+            default => null,
+        };
     }
 }
