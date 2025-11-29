@@ -13,10 +13,15 @@ return new class extends Migration
     {
         Schema::create('analytics_data', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->string('metric');
-            $table->decimal('value', 10, 2);
-            $table->timestamps();
+            $table->string('event_type');
+            $table->decimal('value', 10, 2)->nullable();
+            $table->json('metadata')->nullable();
+            $table->timestamp('created_at');
+
+
+
+
+            $table->index(['event_type', 'created_at']);
         });
     }
 

@@ -12,17 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('generated_reports', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('report_template_id')->constrained()->onDelete('cascade');
-            $table->string('path');
-            $table->string('status')->default('pending');
+            $table->uuid('id')->primary();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('report_template_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('path')->nullable();
+            $table->string('format', 10);
+            $table->string('status')->default('pending')->index();
+            $table->timestamp('expires_at')->index();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('generated_reports');
