@@ -18,6 +18,7 @@ class ExportService
     public function export($data, string $format): string
     {
         $strategy = $this->strategyFactory->create($format);
-        return $strategy->export($data);
+        $filename = 'report-' . now()->timestamp . '.' . ($format === 'excel' ? 'xlsx' : $format);
+        return $strategy->export($data, $filename);
     }
 }
