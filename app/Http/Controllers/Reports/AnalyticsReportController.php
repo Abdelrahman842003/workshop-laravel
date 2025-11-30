@@ -23,7 +23,7 @@ class AnalyticsReportController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function generate(GenerateReportRequest $request, ReportService $reportService): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function generate(GenerateReportRequest $request, ReportService $reportService): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validated();
 
@@ -32,14 +32,16 @@ class AnalyticsReportController extends Controller
             $reportService->saveTemplate($validated);
         }
 
-        $filePath = $reportService->generate(
+        $report = $reportService->generate(
             $validated['report_type'],
             \Illuminate\Support\Arr::except($validated, ['report_type', 'format', 'save_template']),
             $validated['format'],
             null // templateId (future use)
         );
 
-        return response()->download($filePath);
+        return redirect()->route('reports.index')
+            ->with('success', 'Report generation started. You will be notified when it is ready.')
+            ->with('report_id', $report->id);
     }
 
     /**
@@ -67,4 +69,23 @@ class AnalyticsReportController extends Controller
 
         return response()->json($reports);
     }
+
+    /**
+     * Download a generated report.
+     *
+     * @param string $id
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function download(string $id)
+    {
+        $report = \App\Models\GeneratedReport::findOrFail($id);
+
+        if (!file_exists($report->path)) {
+            abort(404, 'Report file not found.');
+        }
+
+        return response()->download($report->path);
+    }
+
+
 }

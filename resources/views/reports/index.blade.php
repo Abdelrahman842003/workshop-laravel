@@ -51,6 +51,8 @@
                         </p>
                     </div>
 
+
+
                     @if ($errors->any())
                         <div class="bg-red-50 border-l-4 border-red-500 p-4 m-8 mb-0">
                             <div class="flex">
@@ -429,21 +431,28 @@
             }
         }
 
-        function closeModal() {
-            const modal = document.getElementById('modal');
-            const backdrop = document.getElementById('modal-backdrop');
-            const panel = document.getElementById('modal-panel');
 
-            // Animation out
-            backdrop.classList.add('opacity-0');
-            panel.classList.remove('opacity-100', 'scale-100');
-            panel.classList.add('opacity-0', 'scale-95');
+        @if(session('success'))
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => openModal('recent'), 500);
+            });
+        @endif
 
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }, 200); // Faster transition
-        }
+            function closeModal() {
+                const modal = document.getElementById('modal');
+                const backdrop = document.getElementById('modal-backdrop');
+                const panel = document.getElementById('modal-panel');
+
+                // Animation out
+                backdrop.classList.add('opacity-0');
+                panel.classList.remove('opacity-100', 'scale-100');
+                panel.classList.add('opacity-0', 'scale-95');
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 200); // Faster transition
+            }
 
         function fetchRecentExports(container) {
             container.innerHTML = '<div class="text-center py-4 text-gray-500">Loading...</div>';
@@ -619,6 +628,35 @@
             document.getElementById('start_date').value = formatDate(start);
             document.getElementById('end_date').value = formatDate(end);
         }
+
+        @if(session('report_id'))
+            document.addEventListener('DOMContentLoaded', () => {
+                const reportId = "{{ session('report_id') }}";
+                let attempts = 0;
+                const maxAttempts = 60; // Stop after 5 minutes (5s * 60)
+
+                const pollInterval = setInterval(() => {
+                    attempts++;
+                    if (attempts > maxAttempts) {
+                        clearInterval(pollInterval);
+                        return;
+                    }
+
+                    fetch('{{ route("reports.recent") }}')
+                        .then(response => response.json())
+                        .then(reports => {
+                            const report = reports.find(r => r.id === reportId);
+                            if (report && report.status === 'completed') {
+                                clearInterval(pollInterval);
+                                window.location.href = '/reports/download/' + reportId;
+                            } else if (report && report.status === 'failed') {
+                                clearInterval(pollInterval);
+                                alert('Report generation failed.');
+                            }
+                        });
+                }, 5000);
+            });
+        @endif
     </script>
 
 </body>
