@@ -30,26 +30,7 @@
                     <h1 class="text-xl font-bold text-gray-900 tracking-tight">Analytics Reports</h1>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="openSidebar('recent')"
-                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Recent Exports
-                    </button>
-                    <button onclick="openSidebar('templates')"
-                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2">
-                            </path>
-                        </svg>
-                        Templates
-                    </button>
-                    <div class="h-6 w-px bg-gray-200 mx-2"></div>
-                    <button
-                        class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Documentation</button>
+
                     <div
                         class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border border-indigo-200 ml-2">
                         A</div>
@@ -69,6 +50,8 @@
                         <p class="text-indigo-100 text-sm">Customize your data export by selecting the parameters below.
                         </p>
                     </div>
+
+
 
                     @if ($errors->any())
                         <div class="bg-red-50 border-l-4 border-red-500 p-4 m-8 mb-0">
@@ -339,8 +322,24 @@
 
                 <!-- Action Buttons -->
                 <div class="pt-6 flex items-center justify-end gap-4">
-                    <button type="button"
-                        class="px-6 py-3 rounded-xl text-gray-600 font-medium hover:bg-gray-100 transition-colors">Reset</button>
+                    <button type="button" onclick="openModal('recent')"
+                        class="px-4 py-3 rounded-xl text-gray-600 font-medium hover:bg-gray-100 transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Recent Exports
+                    </button>
+                    <button type="button" onclick="openModal('templates')"
+                        class="px-4 py-3 rounded-xl text-gray-600 font-medium hover:bg-gray-100 transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2">
+                            </path>
+                        </svg>
+                        Templates
+                    </button>
+
                     <button type="submit"
                         class="px-8 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:shadow-indigo-300 transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,31 +357,47 @@
     </div>
     </main>
 
-    <!-- Sidebar Drawer -->
-    <div id="sidebar" class="fixed inset-0 z-50 overflow-hidden hidden" aria-labelledby="slide-over-title" role="dialog"
-        aria-modal="true" style="display: none;">
-        <div class="absolute inset-0 overflow-hidden">
-            <!-- Background overlay -->
-            <div class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
-                onclick="closeSidebar()"></div>
 
-            <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
-                <div class="w-screen max-w-md transform transition ease-in-out duration-500 sm:duration-700 translate-x-full bg-white shadow-xl flex flex-col"
-                    id="sidebarPanel">
-                    <div class="px-4 py-6 sm:px-6 border-b border-gray-200 flex justify-between items-center">
-                        <h2 class="text-lg font-medium text-gray-900" id="sidebarTitle">Title</h2>
-                        <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none"
-                            onclick="closeSidebar()">
-                            <span class="sr-only">Close panel</span>
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
+
+    <!-- New Modal -->
+    <div id="modal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-[2px] transition-opacity opacity-0" id="modal-backdrop"
+            onclick="closeModal()"></div>
+
+        <!-- Modal Panel -->
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center">
+                <div class="relative transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all w-full max-w-md opacity-0 scale-95"
+                    id="modal-panel">
+
+                    <!-- Header -->
+                    <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <h3 class="text-base font-semibold text-gray-900" id="modal-title">
+                            Modal Title
+                        </h3>
+                        <button type="button"
+                            class="text-gray-400 hover:text-gray-500 focus:outline-none transition-colors"
+                            onclick="closeModal()">
+                            <span class="sr-only">Close</span>
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
-                    <div class="relative flex-1 px-4 sm:px-6 py-6 overflow-y-auto" id="sidebarContent">
-                        <!-- Content goes here -->
+
+                    <!-- Content -->
+                    <div class="px-5 py-4 max-h-[60vh] overflow-y-auto" id="modal-content">
+                        <!-- Dynamic Content -->
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="px-5 py-3 bg-gray-50/50 flex flex-row-reverse border-t border-gray-100">
+                        <button type="button"
+                            class="inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:w-auto transition-all"
+                            onclick="closeModal()">
+                            Close
+                        </button>
                     </div>
                 </div>
             </div>
@@ -390,24 +405,23 @@
     </div>
 
     <script>
-        function openSidebar(type) {
-            const sidebar = document.getElementById('sidebar');
-            const panel = document.getElementById('sidebarPanel');
-            const title = document.getElementById('sidebarTitle');
-            const content = document.getElementById('sidebarContent');
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const backdrop = document.getElementById('modal-backdrop');
+            const panel = document.getElementById('modal-panel');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
 
-            // Show sidebar container
-            sidebar.classList.remove('hidden');
-            sidebar.style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Lock body scroll
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
 
-            // Animate panel in (next frame)
+            // Animation in
             requestAnimationFrame(() => {
-                panel.classList.remove('translate-x-full');
-                panel.classList.add('translate-x-0');
+                backdrop.classList.remove('opacity-0');
+                panel.classList.remove('opacity-0', 'scale-95');
+                panel.classList.add('opacity-100', 'scale-100');
             });
 
-            // Set content based on type
             if (type === 'recent') {
                 title.textContent = 'Recent Exports';
                 fetchRecentExports(content);
@@ -417,21 +431,28 @@
             }
         }
 
-        function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const panel = document.getElementById('sidebarPanel');
 
-            // Animate panel out
-            panel.classList.remove('translate-x-0');
-            panel.classList.add('translate-x-full');
+        @if(session('success'))
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(() => openModal('recent'), 500);
+            });
+        @endif
 
-            // Hide sidebar container after animation
-            setTimeout(() => {
-                sidebar.classList.add('hidden');
-                sidebar.style.display = 'none';
-                document.body.style.overflow = ''; // Unlock body scroll
-            }, 500); // Match duration-500
-        }
+            function closeModal() {
+                const modal = document.getElementById('modal');
+                const backdrop = document.getElementById('modal-backdrop');
+                const panel = document.getElementById('modal-panel');
+
+                // Animation out
+                backdrop.classList.add('opacity-0');
+                panel.classList.remove('opacity-100', 'scale-100');
+                panel.classList.add('opacity-0', 'scale-95');
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 200); // Faster transition
+            }
 
         function fetchRecentExports(container) {
             container.innerHTML = '<div class="text-center py-4 text-gray-500">Loading...</div>';
@@ -476,13 +497,7 @@
                 });
         }
 
-        let currentTemplatesPage = 1;
-
         function fetchTemplates(page, container) {
-            // If container is not provided (e.g. pagination click), find it
-            if (!container) container = document.getElementById('sidebarContent');
-
-            currentTemplatesPage = page;
             container.innerHTML = '<div class="text-center py-4 text-gray-500">Loading...</div>';
 
             fetch(`{{ route('reports.templates') }}?page=${page}`)
@@ -553,7 +568,6 @@
             if (config.end_date) document.getElementById('end_date').value = config.end_date;
 
             // 3. Columns
-            // First uncheck all
             document.querySelectorAll('input[name="columns[]"]').forEach(cb => cb.checked = false);
             if (config.columns && Array.isArray(config.columns)) {
                 config.columns.forEach(col => {
@@ -573,10 +587,7 @@
                 }
             }
 
-            closeSidebar();
-
-            // Optional: Show feedback
-            // alert('Template applied!');
+            closeModal();
         }
 
         function setDateRange(range) {
@@ -617,6 +628,35 @@
             document.getElementById('start_date').value = formatDate(start);
             document.getElementById('end_date').value = formatDate(end);
         }
+
+        @if(session('report_id'))
+            document.addEventListener('DOMContentLoaded', () => {
+                const reportId = "{{ session('report_id') }}";
+                let attempts = 0;
+                const maxAttempts = 60; // Stop after 5 minutes (5s * 60)
+
+                const pollInterval = setInterval(() => {
+                    attempts++;
+                    if (attempts > maxAttempts) {
+                        clearInterval(pollInterval);
+                        return;
+                    }
+
+                    fetch('{{ route("reports.recent") }}')
+                        .then(response => response.json())
+                        .then(reports => {
+                            const report = reports.find(r => r.id === reportId);
+                            if (report && report.status === 'completed') {
+                                clearInterval(pollInterval);
+                                window.location.href = '/reports/download/' + reportId;
+                            } else if (report && report.status === 'failed') {
+                                clearInterval(pollInterval);
+                                alert('Report generation failed.');
+                            }
+                        });
+                }, 5000);
+            });
+        @endif
     </script>
 
 </body>

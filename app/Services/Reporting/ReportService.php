@@ -19,7 +19,7 @@ class ReportService
         protected ExportService $exportService
     ) {}
 
-    public function generate(string $type, array $data, string $format, ?int $templateId = null): string
+    public function generate(string $type, array $data, string $format, ?int $templateId = null): \App\Models\GeneratedReport
     {
         // 1. Track Report Generation (Pending)
         $reportRecord = \App\Models\GeneratedReport::create([
@@ -29,46 +29,13 @@ class ReportService
             'expires_at' => now()->addHours(24),
         ]);
 
-        try {
-            $builder = $this->factory->create($type);
+        // 2. Create DTO
+        $dto = \App\Services\Reporting\DTOs\ReportFilterDTO::fromRequest($data, $type, $format, $templateId);
 
-            if (!$builder) {
-                throw new \InvalidArgumentException("Invalid report type: {$type}");
-            }
+        // 3. Dispatch Job
+        \App\Services\Reporting\Jobs\GenerateReportExportJob::dispatch($reportRecord->id, $dto);
 
-            // 2. Build Report (From Template or Manual)
-            if ($templateId) {
-                $reportDTO = $this->director->buildFromTemplate($builder, $templateId);
-            } else {
-                $builder->setDateRange($data['start_date'], $data['end_date']);
-
-                if (!empty($data['columns'])) {
-                    $builder->selectColumns($data['columns']);
-                }
-
-                if (!empty($data['filters'])) {
-                    $builder->applyFilters($data['filters']);
-                }
-
-                $reportDTO = $builder->getResult();
-            }
-
-            // 3. Export File
-            $filePath = $this->exportService->export($reportDTO, $format);
-
-            // 4. Update Record (Completed)
-            $reportRecord->update([
-                'path' => $filePath,
-                'status' => \App\Services\Reporting\Enums\ReportStatus::COMPLETED,
-                'expires_at' => now()->addDays(30),
-            ]);
-
-            return $filePath;
-
-        } catch (\Throwable $e) {
-            $reportRecord->update(['status' => \App\Services\Reporting\Enums\ReportStatus::FAILED]);
-            throw $e;
-        }
+        return $reportRecord;
     }
 
     public function saveTemplate(array $data): \App\Models\ReportTemplate

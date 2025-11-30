@@ -28,7 +28,7 @@ class CsvExportStrategy implements ExportStrategyInterface
         $headersWritten = false;
 
         foreach ($data->data as $row) {
-            $rowArray = (array) $row;
+            $rowArray = $row instanceof \Illuminate\Database\Eloquent\Model ? $row->toArray() : (array) $row;
 
             // Convert array values to JSON strings
             array_walk($rowArray, function (&$value) {

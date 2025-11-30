@@ -28,7 +28,7 @@ class ExcelExportStrategy implements ExportStrategyInterface
         $headersWritten = false;
 
         foreach ($data->data as $row) {
-            $rowArray = (array) $row;
+            $rowArray = $row instanceof \Illuminate\Database\Eloquent\Model ? $row->toArray() : (array) $row;
 
             if (!$headersWritten) {
                 $writer->addRow(\OpenSpout\Common\Entity\Row::fromValues(array_keys($rowArray)));

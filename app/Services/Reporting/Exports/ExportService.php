@@ -5,9 +5,7 @@ namespace App\Services\Reporting\Exports;
 class ExportService
 {
     public function __construct(
-        protected \App\Services\Reporting\Exports\Strategies\CsvExportStrategy $csvStrategy,
-        protected \App\Services\Reporting\Exports\Strategies\PdfExportStrategy $pdfStrategy,
-        protected \App\Services\Reporting\Exports\Strategies\ExcelExportStrategy $excelStrategy
+        protected \App\Services\Reporting\Exports\Factories\ExportStrategyFactory $strategyFactory
     ) {}
 
     /**
@@ -19,11 +17,7 @@ class ExportService
      */
     public function export($data, string $format): string
     {
-        return match ($format) {
-            'csv' => $this->csvStrategy->export($data),
-            'pdf' => $this->pdfStrategy->export($data),
-            'excel' => $this->excelStrategy->export($data),
-            default => throw new \InvalidArgumentException("Unsupported format: $format"),
-        };
+        $strategy = $this->strategyFactory->create($format);
+        return $strategy->export($data);
     }
 }
