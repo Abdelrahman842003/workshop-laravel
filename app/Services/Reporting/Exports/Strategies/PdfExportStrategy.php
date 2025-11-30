@@ -22,8 +22,10 @@ class PdfExportStrategy implements ExportStrategyInterface
             mkdir(dirname($filePath), 0755, true);
         }
 
-        // Limit data to prevent memory issues
-        $limitedData = $data->data->take(100)->all();
+        // Limit data to prevent memory issues and convert to array
+        $limitedData = $data->data->take(100)->map(function ($item) {
+            return $item instanceof \Illuminate\Database\Eloquent\Model ? $item->toArray() : (array) $item;
+        })->all();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', ['data' => $limitedData]);
         $pdf->save($filePath);

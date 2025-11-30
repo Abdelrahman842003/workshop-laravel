@@ -10,12 +10,12 @@ class ReportDirector
      * Build a report from a template.
      *
      * @param ReportBuilderInterface $builder
-     * @param int $templateId
-     * @return \App\Services\Reporting\DTOs\ReportDTO
+     * @param \App\Models\ReportTemplate $template
+     * @return void
      */
-    public function buildFromTemplate(ReportBuilderInterface $builder, int $templateId)
+    public function buildFromTemplate(ReportBuilderInterface $builder, \App\Models\ReportTemplate $template): void
     {
-        $template = \App\Models\ReportTemplate::findOrFail($templateId);
+
         $config = $template->configuration;
 
         if (isset($config['start_date']) && isset($config['end_date'])) {
@@ -30,6 +30,5 @@ class ReportDirector
             $builder->applyFilters($config['filters']);
         }
 
-        return $builder->getResult();
     }
 }

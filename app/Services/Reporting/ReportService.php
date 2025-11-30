@@ -38,7 +38,9 @@ class ReportService
 
             // 2. Build Report (From Template or Manual)
             if ($templateId) {
-                $reportDTO = $this->director->buildFromTemplate($builder, $templateId);
+                $template = \App\Models\ReportTemplate::findOrFail($templateId);
+                $this->director->buildFromTemplate($builder, $template);
+                $reportDTO = $builder->getResult();
             } else {
                 $builder->setDateRange($data['start_date'], $data['end_date']);
 
