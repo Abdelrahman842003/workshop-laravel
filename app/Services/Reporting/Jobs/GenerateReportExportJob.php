@@ -19,17 +19,11 @@ class GenerateReportExportJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(
         protected string $reportId,
         protected ReportFilterDTO $dto
     ) {}
-
-    /**
-     * Execute the job.
-     */
+        
     public function handle(
         ReportBuilderFactory $factory,
         ReportDirector $director,
@@ -41,9 +35,8 @@ class GenerateReportExportJob implements ShouldQueue
             return;
         }
 
-        // Increase memory limit for large exports (especially PDF)
         ini_set('memory_limit', '2048M');
-        set_time_limit(300); // 5 minutes
+        set_time_limit(300);
 
         try {
             $reportRecord->update(['status' => ReportStatus::PROCESSING]);
@@ -54,39 +47,22 @@ class GenerateReportExportJob implements ShouldQueue
                 throw new \InvalidArgumentException("Invalid report type: {$this->dto->reportType}");
             }
 
-            // Build Report
-            // Priority: Manual Input (DTO) > Template (Director)
-            // If DTO has configuration, use it. If not and Template ID exists (e.g. Scheduled Job), use Director.
             if ($this->dto->startDate && $this->dto->endDate) {
-                $builder->setDateRange($this->dto->startDate, $this->dto->endDate);
-
-                if (!empty($this->dto->columns)) {
-                    $builder->selectColumns($this->dto->columns);
-                }
-
-                if (!empty($this->dto->filters)) {
-                    $builder->applyFilters($this->dto->filters);
-                }
+                $director->buildFromDto($builder, $this->dto);
             } elseif ($this->dto->templateId) {
-                // Fallback: Use Director to build from Template (e.g. Scheduled Tasks)
                 $template = ReportTemplate::findOrFail($this->dto->templateId);
                 $director->buildFromTemplate($builder, $template);
             }
 
             $reportDTO = $builder->getResult();
 
-            // Export File
             $filePath = $exportService->export($reportDTO, $this->dto->format);
 
-            // Update Record
             $reportRecord->update([
                 'path' => $filePath,
                 'status' => ReportStatus::COMPLETED,
                 'expires_at' => now()->addDays(30),
             ]);
-
-            // Optional: Send Notification to User
-            // $reportRecord->user->notify(new ReportGeneratedNotification($reportRecord));
 
         } catch (\Throwable $e) {
             $reportRecord->update(['status' => ReportStatus::FAILED]);
