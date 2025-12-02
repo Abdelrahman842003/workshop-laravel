@@ -36,18 +36,32 @@
     <table>
         <thead>
             <tr>
-                @if(count($data) > 0)
-                    @foreach(array_keys((array) $data[0]) as $header)
-                        <th>{{ ucfirst(str_replace('_', ' ', $header)) }}</th>
-                    @endforeach
-                @endif
+                @foreach($columns as $col)
+                    <th>{{ ucwords(str_replace('_', ' ', $col)) }}</th>
+                @endforeach
             </tr>
         </thead>
         <tbody>
             @foreach($data as $row)
                 <tr>
-                    @foreach((array) $row as $cell)
-                        <td>{{ is_array($cell) ? \Illuminate\Support\Str::limit(json_encode($cell), 50) : $cell }}</td>
+                    @foreach($columns as $col)
+                        @php
+                            $value = is_array($row) ? ($row[$col] ?? '') : ($row->$col ?? '');
+
+                            // Format JSON
+                            if (is_string($value) && str_starts_with(trim($value), '{')) {
+                                $decoded = json_decode($value, true);
+                                if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                    $formatted = [];
+                                    foreach ($decoded as $k => $v) {
+                                        $vStr = is_array($v) ? json_encode($v) : $v;
+                                        $formatted[] = "$k: $vStr";
+                                    }
+                                    $value = implode("<br>", $formatted);
+                                }
+                            }
+                        @endphp
+                        <td>{!! $value !!}</td>
                     @endforeach
                 </tr>
             @endforeach

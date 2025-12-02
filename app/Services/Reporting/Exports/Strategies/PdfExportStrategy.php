@@ -12,24 +12,18 @@ class PdfExportStrategy implements ExportStrategyInterface
      * @param mixed $data
      * @return mixed
      */
-    public function export($data)
+    public function export(\App\Services\Reporting\DTOs\ReportDTO $report, string $filename): string
     {
-        $fileName = 'report-' . now()->timestamp . '.pdf';
-        $filePath = storage_path('app/public/' . $fileName);
+        // Limit PDF to 50 rows to prevent OOM
+        $data = $report->data->take(50);
+        
+        $firstItem = $data->first();
+        $columns = $firstItem ? array_keys($firstItem instanceof \Illuminate\Database\Eloquent\Model ? $firstItem->toArray() : (array) $firstItem) : [];
 
-        // Ensure directory exists
-        if (!file_exists(dirname($filePath))) {
-            mkdir(dirname($filePath), 0755, true);
-        }
+        $export = new \App\Exports\ReportPdfExport($data, $columns);
+        
+        \Maatwebsite\Excel\Facades\Excel::store($export, 'reports/' . $filename, 'public', \Maatwebsite\Excel\Excel::DOMPDF);
 
-        // Limit data to prevent memory issues and convert to array
-        $limitedData = $data->data->take(100)->map(function ($item) {
-            return $item instanceof \Illuminate\Database\Eloquent\Model ? $item->toArray() : (array) $item;
-        })->all();
-
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', ['data' => $limitedData]);
-        $pdf->save($filePath);
-
-        return $filePath;
+        return 'reports/' . $filename;
     }
 }

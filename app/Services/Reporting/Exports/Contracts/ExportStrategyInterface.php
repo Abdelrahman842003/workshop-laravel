@@ -10,5 +10,5 @@ interface ExportStrategyInterface
      * @param mixed $data
      * @return mixed
      */
-    public function export($data);
+    public function export(\App\Services\Reporting\DTOs\ReportDTO $report, string $filename): string;
 }

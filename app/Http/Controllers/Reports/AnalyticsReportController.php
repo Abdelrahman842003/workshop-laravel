@@ -80,11 +80,13 @@ class AnalyticsReportController extends Controller
     {
         $report = \App\Models\GeneratedReport::findOrFail($id);
 
-        if (!file_exists($report->path)) {
+        $path = storage_path('app/public/' . $report->path);
+
+        if (!file_exists($path)) {
             abort(404, 'Report file not found.');
         }
 
-        return response()->download($report->path);
+        return response()->download($path);
     }
 
 

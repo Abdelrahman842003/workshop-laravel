@@ -17,26 +17,7 @@
 
     <div class="min-h-screen flex flex-col">
         <!-- Header -->
-        <header class="bg-white shadow-sm z-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="bg-indigo-600 p-2 rounded-lg">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h1 class="text-xl font-bold text-gray-900 tracking-tight">Analytics Reports</h1>
-                </div>
-                <div class="flex items-center gap-2">
 
-                    <div
-                        class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold border border-indigo-200 ml-2">
-                        A</div>
-                </div>
-            </div>
-        </header>
 
         <!-- Main Content -->
         <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -52,6 +33,26 @@
                     </div>
 
 
+
+
+                    @if (session('success'))
+                        <div class="bg-green-50 border-l-4 border-green-500 p-4 m-8 mb-0">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm leading-5 font-medium text-green-800">
+                                        {{ session('success') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
                     @if ($errors->any())
                         <div class="bg-red-50 border-l-4 border-red-500 p-4 m-8 mb-0">

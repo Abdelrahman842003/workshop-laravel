@@ -41,6 +41,10 @@ class GenerateReportExportJob implements ShouldQueue
             return;
         }
 
+        // Increase memory limit for large exports (especially PDF)
+        ini_set('memory_limit', '2048M');
+        set_time_limit(300); // 5 minutes
+
         try {
             $reportRecord->update(['status' => ReportStatus::PROCESSING]);
 
@@ -51,10 +55,9 @@ class GenerateReportExportJob implements ShouldQueue
             }
 
             // Build Report
-            if ($this->dto->templateId) {
-                $template = ReportTemplate::findOrFail($this->dto->templateId);
-                $director->buildFromTemplate($builder, $template);
-            } else {
+            // Priority: Manual Input (DTO) > Template (Director)
+            // If DTO has configuration, use it. If not and Template ID exists (e.g. Scheduled Job), use Director.
+            if ($this->dto->startDate && $this->dto->endDate) {
                 $builder->setDateRange($this->dto->startDate, $this->dto->endDate);
 
                 if (!empty($this->dto->columns)) {
@@ -64,6 +67,10 @@ class GenerateReportExportJob implements ShouldQueue
                 if (!empty($this->dto->filters)) {
                     $builder->applyFilters($this->dto->filters);
                 }
+            } elseif ($this->dto->templateId) {
+                // Fallback: Use Director to build from Template (e.g. Scheduled Tasks)
+                $template = ReportTemplate::findOrFail($this->dto->templateId);
+                $director->buildFromTemplate($builder, $template);
             }
 
             $reportDTO = $builder->getResult();

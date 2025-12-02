@@ -9,37 +9,19 @@ class ExcelExportStrategy implements ExportStrategyInterface
     /**
      * Export the given data.
      *
-     * @param mixed $data
-     * @return mixed
+     * @param \App\Services\Reporting\DTOs\ReportDTO $report
+     * @param string $filename
+     * @return string
      */
-    public function export($data)
+    public function export(\App\Services\Reporting\DTOs\ReportDTO $report, string $filename): string
     {
-        $fileName = 'report-' . now()->timestamp . '.xlsx';
-        $filePath = storage_path('app/public/' . $fileName);
+        $firstItem = $report->data->first();
+        $columns = $firstItem ? array_keys($firstItem instanceof \Illuminate\Database\Eloquent\Model ? $firstItem->toArray() : (array) $firstItem) : [];
 
-        // Ensure directory exists
-        if (!file_exists(dirname($filePath))) {
-            mkdir(dirname($filePath), 0755, true);
-        }
+        $export = new \App\Exports\ReportExport($report->data, $columns);
+        
+        \Maatwebsite\Excel\Facades\Excel::store($export, 'reports/' . $filename, 'public', \Maatwebsite\Excel\Excel::XLSX);
 
-        $writer = new \OpenSpout\Writer\XLSX\Writer();
-        $writer->openToFile($filePath);
-
-        $headersWritten = false;
-
-        foreach ($data->data as $row) {
-            $rowArray = $row instanceof \Illuminate\Database\Eloquent\Model ? $row->toArray() : (array) $row;
-
-            if (!$headersWritten) {
-                $writer->addRow(\OpenSpout\Common\Entity\Row::fromValues(array_keys($rowArray)));
-                $headersWritten = true;
-            }
-
-            $writer->addRow(\OpenSpout\Common\Entity\Row::fromValues($rowArray));
-        }
-
-        $writer->close();
-
-        return $filePath;
+        return 'reports/' . $filename;
     }
 }

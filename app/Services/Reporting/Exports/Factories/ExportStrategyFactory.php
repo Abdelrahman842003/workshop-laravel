@@ -20,7 +20,7 @@ class ExportStrategyFactory
         return match ($format) {
             'csv' => $this->csvStrategy,
             'pdf' => $this->pdfStrategy,
-            'excel' => $this->excelStrategy,
+            'excel', 'xlsx' => $this->excelStrategy,
             default => throw new InvalidArgumentException("Unsupported format: $format"),
         };
     }
