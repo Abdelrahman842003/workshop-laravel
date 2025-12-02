@@ -9,3 +9,8 @@ Route::get('/reports/generate', [App\Http\Controllers\Reports\AnalyticsReportCon
 Route::get('/reports/recent', [App\Http\Controllers\Reports\AnalyticsReportController::class, 'recent'])->name('reports.recent');
 Route::get('/reports/download/{id}', [App\Http\Controllers\Reports\AnalyticsReportController::class, 'download'])->name('reports.download');
 
+use App\Http\Controllers\Integrations\IntegrationController;
+
+Route::resource('integrations', IntegrationController::class);
+Route::get('integrations/{integration}/logs', [IntegrationController::class, 'logs'])->name('integrations.logs');
+
