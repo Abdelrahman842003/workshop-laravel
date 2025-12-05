@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Reports\AnalyticsReportController;
+use App\Http\Controllers\Payment\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/reports', [AnalyticsReportController::class, 'index'])->name('reports.index');
@@ -14,3 +16,7 @@ use App\Http\Controllers\Integrations\IntegrationController;
 Route::resource('integrations', IntegrationController::class);
 Route::get('integrations/{integration}/logs', [IntegrationController::class, 'logs'])->name('integrations.logs');
 
+Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
+Route::get('/handle_payment', [PaymentController::class, 'handle_payment'])->name('payment.handle');
+
+Route::resource('products', ProductController::class);
