@@ -11,6 +11,11 @@ Route::get('/reports/generate', [App\Http\Controllers\Reports\AnalyticsReportCon
 Route::get('/reports/recent', [App\Http\Controllers\Reports\AnalyticsReportController::class, 'recent'])->name('reports.recent');
 Route::get('/reports/download/{id}', [App\Http\Controllers\Reports\AnalyticsReportController::class, 'download'])->name('reports.download');
 
+use App\Http\Controllers\Integrations\IntegrationController;
+
+Route::resource('integrations', IntegrationController::class);
+Route::get('integrations/{integration}/logs', [IntegrationController::class, 'logs'])->name('integrations.logs');
+
 Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
 Route::get('/handle_payment', [PaymentController::class, 'handle_payment'])->name('payment.handle');
 
